@@ -124,7 +124,7 @@ parameters that work with any resource type.
 In the examples in the section above we used two metaparameters,
 `subscribe` and `require`, both of which build relationships
 between resources. You can see the full list of all metaparameters in the
-[Metaparameter Reference](/references/stable/metaparameters.html), though
+[Metaparameter Reference](/references/stable/metaparameter.html), though
 we'll point out additional ones we use as we continue the tutorial.
 
 #### Chaining resources
@@ -854,6 +854,12 @@ Here the `$ssh_users` variable contains an array with the elements
 `myself` and `someone`. Using the variable append syntax, `+=`, we
 added another element, `someone_else` to the array.
 
+Please note, variables cannot be modified in the same scope because of the
+declarative nature of Puppet.  As a result, $ssh_users contains the element
+'someone_else' only in the scope of class test and not outside scopes.
+Resources outside of this scope will "see" the original array containing only
+myself and someone.
+
 ### Conditionals
 
 At some point you'll need to use a different value based on the value of a variable, or decide to not do something if a particular value is set.
@@ -914,8 +920,8 @@ Like Perl and some other languages with regular expression support, captures in 
 limited scope variables (`$0` to `$n`):
 
     $system = $operatingsystem ? {
-        /(redhat|debian)/   => 'our system is $1',
-        default => 'our system is unknown',
+        /(redhat|debian)/   => "our system is $1",
+        default => "our system is unknown",
     }
 
 In this last example, `$1` will get replaced by the content of the
@@ -966,8 +972,8 @@ As with selectors (see above), regular expressions captures are also available.
 These create limited scope variables `$0` to `$n`:
 
     case $hostname {
-        /^j(ack|ill)$/:   { notice('Welcome $1!') } 
-        default:          { notice('Welcome stranger') }
+        /^j(ack|ill)$/:   { notice("Welcome $1!") } 
+        default:          { notice("Welcome stranger") }
     }
 
 In this last example, if `$host` is `jack` or `jill` then a notice
